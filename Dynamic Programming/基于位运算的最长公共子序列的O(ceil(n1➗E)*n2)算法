@@ -1,0 +1,117 @@
+#include <iostream>
+#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+#include <map>
+using namespace std;
+//---头文件
+#define ps push_back()
+#define rep(x,y,z) for(it x=y;x<=z;x++)
+#define frep(x,y,z) for(it x=y;x<z;x++)
+#define dep(x,y,z) for(it x=y;x>=z;x--)
+#define fdep(x,y,z) for(it x=y;x>z;x--)
+#define kin(x) for(it x=head[u];x;x=g[x].nxt)
+#define sz size()
+#define V g[p].v
+typedef pair<int, int> pii;
+typedef char ch;
+typedef int it;
+typedef long double ld;
+typedef long long ll;
+typedef vector<it> vii;
+typedef vector<ll> vll;
+typedef vector<ld> vld;
+//---宏定义
+const it maxn=1e5+10;
+const it BIT=808,E=62;
+const it SET=4;//字符集个数
+//---特殊值
+it n1,n2,m,h,p,ans;
+char s[50000],t[50000];
+struct Num{
+    ll x[BIT];
+    Num(){frep(i,0,BIT)x[i]=0;}
+    void set(it p){x[p/E]|=1LL<<(p%E);}
+    Num operator & (Num b)
+    {
+        Num c;
+        rep(i, 0, m)c.x[i]=x[i]&b.x[i];
+        return c;
+    }
+    Num operator | (Num b)
+    {
+        Num c;
+        rep(i, 0, m)c.x[i]=x[i]|b.x[i];
+        return c;
+    }
+    Num operator ^ (Num b)
+    {
+        Num c;
+        rep(i, 0, m)c.x[i]=x[i]^b.x[i];
+        return c;
+    }
+    Num operator - (Num b)
+    {
+        Num c;
+        rep(i, 0, m)c.x[i]=x[i]-b.x[i];
+        frep(i, 0, m)if(c.x[i]<0)c.x[i]+=(1LL<<E),c.x[i+1]--;
+        return c;
+    }
+    void shl()
+    {
+        ll o=1,p;
+        for(it i=0;i<=m;o=p,i++)
+        {
+            p=x[i]&(1LL<<h),(x[i]<<=1)&=~(1LL<<(h+1));
+            if(o)x[i]|=1;
+        }
+    }
+    void clear()
+    {
+        frep(i, 0, BIT)x[i]=0;
+    }
+}ap[SET],x,row[2];
+//---变量
+inline char nc()
+{
+    static ch buf[100000],*p1=buf,*p2=buf;
+    return p1==p2&&(p2=(p1=buf)+fread(buf,1,100000,stdin),p1==p2)?EOF:*p1++;
+}
+inline void read(it &x)
+{
+    ch c=nc(),b=1;
+    for(;!(c>='0'&&c<='9');c=nc())if(c=='-')b=-1;
+    for(x=0;c>='0'&&c<='9';x=x*10+c-'0',c=nc());
+    x*=b;
+}
+
+it hsh(it x)
+{
+    if(x=='A')return 0;
+    if(x=='C')return 1;
+    if(x=='G')return 2;
+    return 3;
+}
+//---函数
+
+int main()
+{
+    while (scanf("%d%d%s%s",&n1,&n2,s,t)!=EOF){
+        frep(i, 0, SET)ap[i].clear();
+        frep(i, 0, 2)row[i].clear();
+        p=ans=0;
+        m=(n1-1)/E,h=(m?E:n1)-1;
+        //
+        frep(i,0,n1)ap[hsh(s[i])].set(i);
+        frep(i, 0, n2){
+            p^=1;
+            x=ap[hsh(t[i])]|row[p^1];
+            row[p^1].shl();
+            row[p]=x&((x-row[p^1])^x);
+        }
+        dep(i, m, 0)dep(j, h, 0)if(row[p].x[i]&(1LL<<j))ans++;
+        printf("%d\n",ans);
+    }
+    return 0;
+}

@@ -85,7 +85,7 @@ inline void read(it &x)
     for(x=0;c>='0'&&c<='9';x=x*10+c-'0',c=nc());
     x*=b;
 }
-
+//---各种挂
 it hsh(it x)
 {
     if(x=='A')return 0;
